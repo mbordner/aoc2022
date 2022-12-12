@@ -1,6 +1,9 @@
-package expression
+package bigexpression
 
-import "github.com/pkg/errors"
+import (
+	"github.com/pkg/errors"
+	"math/big"
+)
 
 // Precedence returns > 0 if op1 > op2, or < 0 if op1 < op2, otherwise 0
 type Precedence func(op1, op2 string) int
@@ -11,12 +14,12 @@ type Operator struct {
 	right interface{}
 }
 
-func (o *Operator) Eval(vars map[string]int64) int64 {
-	var l, r int64
+func (o *Operator) Eval(vars map[string]*big.Int) *big.Int {
+	var l, r *big.Int
 	switch tl := o.left.(type) {
 	case variable:
 		l = tl.Eval(vars)
-	case int64:
+	case *big.Int:
 		l = tl
 	case *Operator:
 		l = tl.Eval(vars)
@@ -24,26 +27,22 @@ func (o *Operator) Eval(vars map[string]int64) int64 {
 	switch tr := o.right.(type) {
 	case variable:
 		r = tr.Eval(vars)
-	case int64:
+	case *big.Int:
 		r = tr
 	case *Operator:
 		r = tr.Eval(vars)
 	}
 	switch o.op {
 	case "-":
-		return l - r
+		return big.NewInt(0).Sub(l, r)
 	case "+":
-		return l + r
+		return big.NewInt(0).Add(l, r)
 	case "*":
-		return l * r
+		return big.NewInt(0).Mul(l, r)
 	case "/":
-		return l / r
+		return big.NewInt(0).Div(l, r)
 	}
 	panic(errors.New("unknown operator"))
-}
-
-func CompareOperator(op1, op2 string) int {
-	return 0
 }
 
 func IsBinary(op string) bool {

@@ -1,7 +1,8 @@
-package expression
+package bigexpression
 
 import (
 	"github.com/pkg/errors"
+	"math/big"
 	"regexp"
 	"strconv"
 )
@@ -65,8 +66,9 @@ func (p *Parser) P() error {
 		return err
 	}
 	if reDigits.MatchString(n) {
-		v, _ := strconv.ParseInt(n, 10, 64)
-		p.operands = append(p.operands, v)
+		int64Val, _ := strconv.ParseInt(n, 10, 64)
+		bigIntVal := big.NewInt(int64Val)
+		p.operands = append(p.operands, bigIntVal)
 		p.consume()
 	} else if reVariable.MatchString(n) {
 		p.operands = append(p.operands, variable{name: n})
@@ -148,7 +150,7 @@ func (p *Parser) consume() {
 	p.start = p.end
 }
 
-func (p *Parser) Eval(vars map[string]int64) int64 {
+func (p *Parser) Eval(vars map[string]*big.Int) *big.Int {
 	return p.operands[0].(*Operator).Eval(vars)
 }
 
