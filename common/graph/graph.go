@@ -3,7 +3,7 @@ package graph
 import "fmt"
 
 type TraversableNodeFunction func(n *Node) bool
-type TraversalbeEdgeFunction func(e *Edge) bool
+type TraversableEdgeFunction func(e *Edge) bool
 
 type VisitedNodes []*Node
 
@@ -22,7 +22,7 @@ type Edge struct {
 	value           float64
 	properties      map[string]interface{}
 	traversable     bool
-	traversableFunc *TraversalbeEdgeFunction
+	traversableFunc *TraversableEdgeFunction
 }
 
 func (e *Edge) IsTraversable() bool {

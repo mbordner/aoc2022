@@ -1,8 +1,8 @@
 package djikstra
 
 import (
-	"aoc2021/common/graph"
 	hp "container/heap"
+	"github.com/mbordner/aoc2022/common/graph"
 	"math"
 )
 
@@ -13,7 +13,7 @@ type NodeValue struct {
 	visited      bool
 }
 
-// this map will hold all of the nodes, visited and unvisited
+// ShortestPaths will hold all the nodes, visited and unvisited
 type ShortestPaths map[interface{}]*NodeValue
 
 func (sps ShortestPaths) GetShortestPath(n *graph.Node) ([]*graph.Node, float64) {
