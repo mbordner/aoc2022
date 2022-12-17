@@ -239,6 +239,61 @@ func (p Pos) Diff(o Pos) Pos {
 	return v
 }
 
+func (p Pos) ManhattanDistance(o Pos) int {
+	return Max(p.X, o.X) - Min(p.X, o.X) +
+		Max(p.Y, o.Y) - Min(p.Y, o.Y) +
+		Max(p.Z, o.Z) - Min(p.Z, o.Z)
+}
+
+func (p Pos) GetXYPositionsAtManhattanDistance(d int) Positions {
+	ps := make(Positions, 0, ((d-1)*4)+4)
+
+	left := Pos{X: p.X - d, Y: p.Y}
+	right := Pos{X: p.X + d, Y: p.Y}
+	top := Pos{X: p.X, Y: p.Y - d}
+	bottom := Pos{X: p.X, Y: p.Y + d}
+
+	ps = append(ps, Positions{top, bottom, left, right}...)
+
+	for j := 1; j < d; j++ {
+		dx := d - j
+		topY, bottomY := p.Y-j, p.Y+j
+		topLeft := Pos{X: p.X - dx, Y: topY}
+		topRight := Pos{X: p.X + dx, Y: topY}
+		bottomLeft := Pos{X: p.X - dx, Y: bottomY}
+		bottomRight := Pos{X: p.X + dx, Y: bottomY}
+
+		ps = append(ps, Positions{topLeft, topRight, bottomLeft, bottomRight}...)
+	}
+
+	return ps
+}
+
+// GetXYPositionsWithinManhattanDistance returns positions within distance in x,y plane
+func (p Pos) GetXYPositionsWithinManhattanDistance(d int) Positions {
+	pm := make(map[Pos]bool)
+
+	for j := 0; j <= d; j++ {
+		for i := 0; i <= d-j; i++ {
+			topY, bottomY := p.Y-j, p.Y+j
+			topLeft := Pos{X: p.X - i, Y: topY}
+			topRight := Pos{X: p.X + i, Y: topY}
+			bottomLeft := Pos{X: p.X - i, Y: bottomY}
+			bottomRight := Pos{X: p.X + i, Y: bottomY}
+			pm[topLeft] = true
+			pm[topRight] = true
+			pm[bottomLeft] = true
+			pm[bottomRight] = true
+		}
+	}
+
+	ps := make(Positions, 0, len(pm))
+	for p := range pm {
+		ps = append(ps, p)
+	}
+	return ps
+}
+
 func (p Pos) Clone() Pos {
 	return Pos{X: p.X, Y: p.Y, Z: p.Z}
 }
@@ -255,11 +310,25 @@ func (p Pos) String() string {
 	return fmt.Sprintf("{x:%d, y:%d, z:%d}", p.X, p.Y, p.Z)
 }
 
-func Abs(n int) int {
-	if n > 0 {
-		return n
+func Min(a, b int) int {
+	if a < b {
+		return a
 	}
-	return -n
+	return b
+}
+
+func Max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
+}
+
+func Abs(n int) int {
+	if n < 0 {
+		return -n
+	}
+	return n
 }
 
 func (bb *BoundingBox) GetPositionsSize() uint64 {
