@@ -152,6 +152,14 @@ func (p *Parser) Eval(vars map[string]int64) int64 {
 	return p.operands[0].(*Operator).Eval(vars)
 }
 
+func (p *Parser) EvalKnown(vars map[string]int64) (int64, error) {
+	return p.operands[0].(*Operator).EvalKnown(vars)
+}
+
+func (p *Parser) String() string {
+	return p.operands[0].(*Operator).String()
+}
+
 func NewParser(expr string) (*Parser, error) {
 	p := func(op1, op2 string) int {
 		if precedenceMap[op1] > precedenceMap[op2] {
