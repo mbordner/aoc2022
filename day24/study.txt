@@ -1,0 +1,27 @@
+#.######
+#>>.<^<#
+#.<..<<#
+#>v.><>#
+#<^v^^>#
+######.#
+
+jetstream
+_________
+each row will get east and west jetstream.
+each column wil get a north and south jetstream
+
+
+jetstream
+ east/west:   left to right array, with copy appended to end
+ north/south:  top to bottom array, with copy appended to end
+
+ each jetstream has an start index pointer, and a length, length will be half the array length
+
+ pointer movement and starting
+ right moving (increases), pointer starts at beginning, when pointer gets to half, it resets
+ * north moving streams
+ * west moving streams
+
+ left moving (decreases), pointer starts at half and moves to 0, when it gets to 0, it resets
+ * south moving streams
+ * east moving streams
