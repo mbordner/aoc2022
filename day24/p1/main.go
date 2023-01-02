@@ -6,11 +6,17 @@ import (
 )
 
 func main() {
-	m := NewMountain("../test.txt")
+	m := NewMountain("../data.txt")
 	if m != nil {
-		path := m.StepsToGoal(m.start, m.goal, 0, 40)
+
+		path := m.StepsToGoal(m.start, m.goal, 0, 500)
 		if path != nil {
 			fmt.Println(path)
+			//for i := 0; i < len(path); i++ {
+			//fmt.Println(i, " :=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+			//m.PrintWithPlayerPos(i, path[i])
+			//}
+
 			fmt.Println(len(path) - 1)
 		}
 	}
@@ -93,6 +99,17 @@ func (m *Mountain) Print(stepsTaken int) {
 	}
 }
 
+func (m *Mountain) PrintWithPlayerPos(stepsTaken int, p Pos) {
+	lines := m.GetSteamPrintLines(stepsTaken)
+	j, i := p.R+1, p.C+1
+	line := []byte(lines[j])
+	line[i] = 'P'
+	lines[j] = string(line)
+	for _, l := range lines {
+		fmt.Println(l)
+	}
+}
+
 func (m *Mountain) GetSteamPrintLines(stepsTaken int) []string {
 	lines := make([]string, 0, len(m.rowStreams)+2)
 	line := make([]byte, len(m.colStreams)+2, len(m.colStreams)+2)
@@ -126,6 +143,27 @@ func (m *Mountain) GetSteamPrintLines(stepsTaken int) []string {
 	lines = append(lines, string(line))
 
 	return lines
+}
+
+func (m *Mountain) HasBlizzard(stepsTaken, r, c int) bool {
+	var count int
+	_, count = m.colStreams[c].northward.GetBlizzardCount(stepsTaken, r)
+	if count > 0 {
+		return true
+	}
+	_, count = m.colStreams[c].southward.GetBlizzardCount(stepsTaken, r)
+	if count > 0 {
+		return true
+	}
+	_, count = m.rowStreams[r].westward.GetBlizzardCount(stepsTaken, c)
+	if count > 0 {
+		return true
+	}
+	_, count = m.rowStreams[r].eastward.GetBlizzardCount(stepsTaken, c)
+	if count > 0 {
+		return true
+	}
+	return false
 }
 
 func (m *Mountain) GetBlizzardCount(stepsTaken, r, c int) (char byte, count int) {
@@ -164,7 +202,19 @@ func (m *Mountain) GetBlizzardCount(stepsTaken, r, c int) (char byte, count int)
 	return
 }
 
+var (
+	memo = make(map[int]map[Pos][]Pos)
+)
+
 func (m *Mountain) StepsToGoal(from Pos, goal Pos, stepsTaken int, maxStepsTaken int) []Pos {
+
+	if _, e := memo[stepsTaken]; !e {
+		memo[stepsTaken] = make(map[Pos][]Pos)
+	}
+	if ps, e := memo[stepsTaken][from]; e {
+		return ps
+	}
+
 	if from == goal {
 		return []Pos{goal}
 	}
@@ -175,8 +225,8 @@ func (m *Mountain) StepsToGoal(from Pos, goal Pos, stepsTaken int, maxStepsTaken
 
 	// if waiting and blizzard came, or we walked into a blizzard, this path ends
 	if from.R >= 0 && from.R < len(m.rowStreams) {
-		_, count := m.GetBlizzardCount(stepsTaken, from.R, from.C)
-		if count > 0 {
+		if m.HasBlizzard(stepsTaken, from.R, from.C) {
+			memo[stepsTaken][from] = nil
 			return nil
 		}
 	}
@@ -215,7 +265,7 @@ func (m *Mountain) StepsToGoal(from Pos, goal Pos, stepsTaken int, maxStepsTaken
 		}
 	}
 
-	// can always wait, but we'll explore waiting last
+	// can always wait
 	nextPossible = append(nextPossible, from)
 
 	var best []Pos
@@ -232,14 +282,16 @@ func (m *Mountain) StepsToGoal(from Pos, goal Pos, stepsTaken int, maxStepsTaken
 				best = result
 			}
 			resultFound = true
-
 		}
 	}
 
 	if resultFound {
-		return append([]Pos{from}, best...)
+		best = append([]Pos{from}, best...)
+		memo[stepsTaken][from] = best
+		return best
 	}
 
+	memo[stepsTaken][from] = nil
 	return nil
 }
 
