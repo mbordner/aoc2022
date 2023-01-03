@@ -1,4 +1,4 @@
-```
+``` 
 --- Day 25: Full of Hot Air ---
 As the expedition finally reaches the extraction point, several large hot air balloons drift down to meet you. Crews quickly start unloading the equipment the balloons brought: many hot air balloon kits, some fuel tanks, and a fuel heating machine.
 
@@ -95,8 +95,6 @@ The Elves are starting to get cold. What SNAFU number do you supply to Bob's con
 
 Your puzzle answer was 2-2=12=1-=-1=000=222.
 
-The first half of this puzzle is complete! It provides one gold star: *
-
 --- Part Two ---
 The hot air balloons quickly carry you to the North Pole. As soon as you land, most of the expedition is escorted directly to a small building attached to the reindeer stables.
 
@@ -105,4 +103,8 @@ The head smoothie chef has just finished warming up the industrial-grade smoothi
 As you do, a very young Elf - one you recognize from the expedition team - approaches the table and holds up a single star fruit he found. The head smoothie chef places it in the blender.
 
 Only 49 stars to go.
+
+If you like, you can .
+
+Both parts of this puzzle are complete! They provide two gold stars: **
 ```
