@@ -51,28 +51,41 @@ func main() {
 
 			_, _ = expr.EvalKnown(valMap)
 
-			fmt.Println(expr.String())
+			fmt.Println("0 = ", expr.String())
 
-			/*
-				leftExpr := exprMap[exprMap["root"].left].String(exprMap, valMap)
-				rightExpr := exprMap[exprMap["root"].right].String(exprMap, valMap)
+			leftExpr := exprMap[exprMap["root"].left].String(exprMap, valMap)
+			rightExpr := exprMap[exprMap["root"].right].String(exprMap, valMap)
 
-				fmt.Println(leftExpr)
-				fmt.Println("======")
-				fmt.Println(rightExpr)
-			*/
-
-			i := int64(0)
-
-			for {
-				valMap["humn"] = i
-				if expr.Eval(valMap) == int64(0) {
-					break
-				}
-				i++
+			lExpr, err := expression.NewParser(leftExpr)
+			if err != nil {
+				panic(err)
 			}
 
-			fmt.Println(i)
+			rExpr, err := expression.NewParser(rightExpr)
+			if err != nil {
+				panic(err)
+			}
+
+			_, lErr := lExpr.EvalKnown(valMap)
+			_, rErr := rExpr.EvalKnown(valMap)
+
+			var operator *expression.Operator
+
+			if lErr != nil {
+				_, operator, err = lExpr.RootOperator().InverseOperationToVariableExpression(rExpr.RootOperator())
+			} else if rErr != nil {
+				_, operator, err = rExpr.RootOperator().InverseOperationToVariableExpression(lExpr.RootOperator())
+			}
+
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Println("humn = ", operator.String())
+
+			val, _ := operator.EvalKnown(valMap)
+
+			fmt.Println("humn = ", val)
 
 		} else {
 			panic("no root expression")

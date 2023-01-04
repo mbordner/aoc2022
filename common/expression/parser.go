@@ -69,7 +69,7 @@ func (p *Parser) P() error {
 		p.operands = append(p.operands, v)
 		p.consume()
 	} else if reVariable.MatchString(n) {
-		p.operands = append(p.operands, variable{name: n})
+		p.operands = append(p.operands, Variable{name: n})
 		p.consume()
 	} else if n == "(" {
 		p.consume()
@@ -154,6 +154,10 @@ func (p *Parser) Eval(vars map[string]int64) int64 {
 
 func (p *Parser) EvalKnown(vars map[string]int64) (int64, error) {
 	return p.operands[0].(*Operator).EvalKnown(vars)
+}
+
+func (p *Parser) RootOperator() *Operator {
+	return p.operands[0].(*Operator)
 }
 
 func (p *Parser) String() string {
